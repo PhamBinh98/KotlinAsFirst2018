@@ -130,7 +130,6 @@ fun travelMinutes(hoursDepart: Int, minutesDepart: Int, hoursArrive: Int, minute
  */
 fun accountInThreeYears(initial: Int, percent: Int): Double {
      return initial * ( Math.pow(1 + percent / 100.0, 3.0))
-
 }
 
 /**
