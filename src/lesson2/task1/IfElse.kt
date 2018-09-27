@@ -64,14 +64,13 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * Мой возраст. Для заданного 0 < n < 200, рассматриваемого как возраст человека,
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
-fun ageDescription(age: Int): String {
-    when {
-        (age % 100 > 4) && (age % 100 <= 20) -> return "$age лет"
-        (age % 10 > 1) && (age % 10 < 5) -> return "$age года"
-        age % 10 == 1 -> return "$age год"
-        else -> return "$age лет"
-    }
-}
+fun ageDescription(age: Int): String =
+        when {
+            ((age % 100) in 11..14) -> "$age лет"
+            ((age % 10) in 2..4) -> "$age года"
+            ((age % 10) == 1) -> "$age год"
+            else -> "$age лет"
+        }
 
 /**
  * Простая
@@ -83,11 +82,14 @@ fun ageDescription(age: Int): String {
 fun timeForHalfWay(t1: Double, v1: Double,
                    t2: Double, v2: Double,
                    t3: Double, v3: Double): Double {
-    val s = (t1 * v1 + t2 * v2 + t3 * v3) / 2
-    when {
-        s <= t1 * v1 -> return s / v1
-        ((s > t1 * v1) and (s <= (t1 * v1 + t2 * v2))) -> return t1 + (s - t1 * v1) / v2
-        else -> return t1 + t2 + (s - t1 * v1 - t2 * v2) / v3
+    val s1 = v1 * t1
+    val s2 = v2 * t2
+    val s3 = v3 * t3
+    val s = (s1 + s2 + s3) / 2
+    return when {
+        s <= s1 -> s / v1
+        ((s > s1) && (s <= (s1 + s2))) -> t1 + (s - s1) / v2
+        else -> t1 + t2 + (s - s1 - s2) / v3
     }
 }
 
@@ -102,17 +104,13 @@ fun timeForHalfWay(t1: Double, v1: Double,
  */
 fun whichRookThreatens(kingX: Int, kingY: Int,
                        rookX1: Int, rookY1: Int,
-                       rookX2: Int, rookY2: Int): Int {
-    if (((kingX == rookX1) || (kingY == rookY1)) && ((kingX == rookX2) || (kingY == rookY2)))
-        return 3
-    else {
+                       rookX2: Int, rookY2: Int): Int =
         when {
-            ((kingX == rookX1) || (kingY == rookY1)) -> return 1
-            ((kingX == rookX2) || (kingY == rookY2)) -> return 2
-            else -> return 0
+            (((kingX == rookX1) || (kingY == rookY1)) && ((kingX == rookX2) || (kingY == rookY2))) -> 3
+            ((kingX == rookX1) || (kingY == rookY1)) -> 1
+            ((kingX == rookX2) || (kingY == rookY2)) -> 2
+            else -> 0
         }
-    }
-}
 
 
 /**
@@ -127,17 +125,13 @@ fun whichRookThreatens(kingX: Int, kingY: Int,
  */
 fun rookOrBishopThreatens(kingX: Int, kingY: Int,
                           rookX: Int, rookY: Int,
-                          bishopX: Int, bishopY: Int): Int {
-    if ((((kingX == rookX) || (kingY == rookY)) && (Math.abs(kingX - bishopX) == Math.abs(kingY - bishopY))))
-        return 3
-    else {
+                          bishopX: Int, bishopY: Int): Int =
         when {
-            ((kingX == rookX) || (kingY == rookY)) -> return 1
-            (Math.abs(kingX - bishopX) == Math.abs(kingY - bishopY)) -> return 2
-            else -> return 0
+            ((((kingX == rookX) || (kingY == rookY)) && (Math.abs(kingX - bishopX) == Math.abs(kingY - bishopY)))) -> 3
+            ((kingX == rookX) || (kingY == rookY)) -> 1
+            (Math.abs(kingX - bishopX) == Math.abs(kingY - bishopY)) -> 2
+            else -> 0
         }
-    }
-}
 
 /**
  * Простая
@@ -152,7 +146,7 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
     val cosb = (sqr(a) + sqr(c) - sqr(b)) / (2 * a * c)
     val cosc = (sqr(a) + sqr(b) - sqr(c)) / (2 * a * b)
     return when {
-        ((a >= (b + c)) or (b >= (c + a)) or (c >= (a + b))) -> -1
+        ((a >= (b + c)) || (b >= (c + a)) || (c >= (a + b))) -> -1
         ((cosa > 0.0) && (cosb > 0.0) && (cosc > 0.0)) -> 0
         ((cosa < 0.0) || (cosb < 0.0) || (cosc < 0.0)) -> 2
         else -> 1
@@ -168,18 +162,11 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  * Если пересечения нет, вернуть -1.
  */
 fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
-    return if (a <= c) {
-        when {
-            b < c -> -1
-            (d > b) && (b >= c) -> b - c
-            else -> d - c
-        }
-    } else {
-        when {
-            d < a -> -1
-            (b > d) && (d >= a) -> d - a
-            else -> b - a
-        }
+    val i = max(a, c)
+    val j = Math.min(b, d)
+    return when {
+        j >= i -> j - i
+        else -> -1
     }
 }
 
