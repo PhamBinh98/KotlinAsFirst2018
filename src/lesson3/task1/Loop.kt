@@ -1,6 +1,7 @@
 @file:Suppress("UNUSED_PARAMETER")
 
 package lesson3.task1
+
 import java.lang.Math.pow
 import kotlin.math.abs
 import kotlin.math.sqrt
@@ -111,17 +112,19 @@ fun fib(n: Int): Int {
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int {
-    var a = m
-    var b = n
-    val mn = m * n
-    while (a != b) {
-        if (a > b)
-            a -= b
-        else b -= a
+fun gcd(m: Int, n: Int): Int {
+    var r = 0
+    var x = maxOf(m, n)
+    var y = minOf(m, n)
+    while (y != 0) {
+        r = x % y
+        x = y
+        y = r
     }
-    return mn / a
+    return x
 }
+
+fun lcm(m: Int, n: Int): Int = m * n / gcd(m, n)
 
 
 /**
@@ -147,7 +150,7 @@ fun minDivisor(n: Int): Int {
  */
 fun maxDivisor(n: Int): Int {
     var a = 1
-    for (i in (n / 2.toInt()) downTo 1) {
+    for (i in (n / 2) downTo 1) {
         a = i
         if (n % i == 0) break
     }
@@ -162,16 +165,8 @@ fun maxDivisor(n: Int): Int {
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
 fun isCoPrime(m: Int, n: Int): Boolean {
-    var x = n
-    var y = m
-    while ((x != 0) && (y != 0)) {
-        if (x > y) x %= y
-        else y %= x
-    }
-    x += y
-    return x == 1
+    return gcd(m, n) == 1
 }
-
 
 /**
  * Простая
@@ -244,13 +239,15 @@ fun sin(x: Double, eps: Double): Double {
  */
 fun cos(x: Double, eps: Double): Double {
     var n = 0.0
-    var c = 0.0
+    var c = 1.0
+    var s = 0.0
     val b = x % (2 * Math.PI)
-    while (abs(pow(-1.0, n) * pow(b, 2 * n) / (factorial((2 * n.toInt())))) > eps) {
-        c += (pow(-1.0, n) * pow(b, 2 * n) / (factorial((2 * n.toInt()))))
+    while (abs(c) > eps) {
+        c = (pow(-1.0, n) * pow(b, 2 * n) / (factorial((2 * n.toInt()))))
+        s += c
         n++
     }
-    return c
+    return s
 }
 
 /**
@@ -314,7 +311,33 @@ fun hasDifferentDigits(n: Int): Boolean {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun squareSequenceDigit(n: Int): Int = TODO()
+fun locate(a: Int, b: Int, n: Int): Int {
+    var x = 0
+    var y = b
+    if (a == n) return b % 10
+    for (i in 1..(a - n + 1)) {
+        x = y % 10
+        y /= 10
+    }
+    return x
+}
+
+fun squareSequenceDigit(n: Int): Int {
+    var x = 0
+    var y = 0
+    var s = 1
+    var r = 1
+    while (y < n) {
+        x++
+        s = x * x
+        while (s > 0) {
+            s /= 10
+            y++
+        }
+    }
+    return locate(y, x * x, n)
+}
+
 
 /**
  * Сложная
@@ -325,4 +348,23 @@ fun squareSequenceDigit(n: Int): Int = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int = TODO()
+fun fibSequenceDigit(n: Int): Int {
+    var x1 = 1
+    var x2 = 1
+    var x3 = 1
+    var a = 2
+    var b = 1
+    if (n <= 2)
+        return 1
+    while (a < n) {
+        x1 = x2
+        x2 = x3
+        x3 = x1 + x2
+        b = x3
+        while (b > 0) {
+            b /= 10
+            a++
+        }
+    }
+    return locate(a, x3, n)
+}
