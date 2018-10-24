@@ -117,13 +117,8 @@ fun buildSumExample(list: List<Int>) = list.joinToString(separator = " + ", post
  * по формуле abs = sqrt(a1^2 + a2^2 + ... + aN^2).
  * Модуль пустого вектора считать равным 0.0.
  */
-fun abs(v: List<Double>): Double {
-    var s = 0.0
-    for (element in v) {
-        s += pow(element, 2.0)
-    }
-    return sqrt(s)
-}
+fun abs(v: List<Double>): Double = sqrt(v.map { it * it }.sum())
+
 
 /**
  * Простая
@@ -133,8 +128,7 @@ fun abs(v: List<Double>): Double {
 fun mean(list: List<Double>): Double {
     if (list.isEmpty())
         return 0.0
-    else
-        return list.sum() / list.size
+    return list.sum() / list.size
 }
 
 /**
@@ -159,16 +153,8 @@ fun center(list: MutableList<Double>): MutableList<Double> {
  * представленные в виде списков a и b. Скалярное произведение считать по формуле:
  * C = a1b1 + a2b2 + ... + aNbN. Произведение пустых векторов считать равным 0.0.
  */
-fun times(a: List<Double>, b: List<Double>): Double {
-    if (a.isEmpty() || b.isEmpty())
-        return 0.0
-    else {
-        var c = 0.0
-        for (i in 0 until a.size)
-            c += (a[i] * b[i])
-        return c
-    }
-}
+fun times(a: List<Double>, b: List<Double>): Double = a.foldIndexed(0.0) { i, num, _ -> num + a[i] * b[i] }
+
 
 /**
  * Средняя
@@ -179,15 +165,11 @@ fun times(a: List<Double>, b: List<Double>): Double {
  * Значение пустого многочлена равно 0.0 при любом x.
  */
 fun polynom(p: List<Double>, x: Double): Double {
-    if (p.isEmpty())
-        return 0.0
-    else {
-        var s = 0.0
-        for (i in 0 until p.size) {
-            s += p[i] * pow(x, i.toDouble())
-        }
-        return s
+    var res = 0.0
+    for ((i, elem) in p.withIndex()) {
+        res += elem * pow(x, i.toDouble())
     }
+    return res
 }
 
 /**
@@ -250,18 +232,15 @@ fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*
  * например: n = 100, base = 4 -> (1, 2, 1, 0) или n = 250, base = 14 -> (1, 3, 12)
  */
 fun convert(n: Int, base: Int): List<Int> {
-    val list = mutableListOf<Int>()
-    val result = mutableListOf<Int>()
+    if (n == 0) return listOf(0)
+    val res = mutableListOf<Int>()
     var a = n
-    while (a >= base) {
-        list.add(a % base)
+    while (a != 0) {
+        res.add(a % base)
         a /= base
     }
-    list.add(a)
-    for (i in list.size - 1 downTo 0) {
-        result.add(list[i])
-    }
-    return result
+    res.reverse()
+    return res
 }
 
 /**
@@ -275,17 +254,14 @@ fun convert(n: Int, base: Int): List<Int> {
 fun convertToString(n: Int, base: Int): String {
     val list = convert(n, base)
     val word = "abcdefghijklmnopqrstuvwxyz"
-    var element = ""
-    var str = ""
-    for (i in 0 until list.size) {
-        when (list[i]) {
-            in 0..9 -> element = list[i].toString()
-            in 10..35 -> element = word[list[i] - 10].toString()
-            else -> element = "z"
+    val x = StringBuilder()
+    if (n == 0) x.append(n)
+    else
+        for (element in list) {
+            if (element < 10) x.append(element.toString())
+            else x.append(word[element - 10].toString())
         }
-        str = str + element
-    }
-    return str
+    return x.toString()
 }
 
 /**
