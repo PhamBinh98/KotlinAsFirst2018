@@ -304,7 +304,22 @@ fun decimalFromString(str: String, base: Int): Int {
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun roman(n: Int): String = TODO()
+fun roman(n: Int): String {
+    var wN = n
+    val rom = mutableListOf<Pair<Int, String>>(Pair(1000, "M"), Pair(900, "CM"), Pair(500, "D"), Pair(400, "CD"),
+            Pair(100, "C"), Pair(90, "XC"), Pair(50, "L"), Pair(40, "XL"), Pair(10, "X"), Pair(9, "IX"),
+            Pair(5, "V"), Pair(4, "IV"), Pair(1, "I"))
+    val res = StringBuilder()
+    while (rom.count() > 0) {
+        if (wN < rom[0].first)
+            rom.removeAt(0)
+        else {
+            wN -= rom[0].first
+            res.append(rom[0].second)
+        }
+    }
+    return res.toString()
+}
 
 /**
  * Очень сложная
@@ -313,4 +328,59 @@ fun roman(n: Int): String = TODO()
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
-fun russian(n: Int): String = TODO()
+fun getThuosand(ri: Int): String {
+    val n10 = ri % 100
+    val n1 = n10 % 10
+    if (n10 in 11..19) return "тысяч"
+    else if (n1 in 2..4) return "тысячи"
+    else if (n1 == 1) return "тысяча"
+    else return "тысяч"
+}
+
+fun russian(n: Int): String {
+    if (n == 0) return "ноль"
+    val sex = listOf<List<String>>(listOf("", "один", "два", "три", "четыре", "пять", "шесть", "семь",
+            "восемь", "девять"),
+            listOf("", "одна", "две", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"))
+    val str100 = listOf<String>("", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот",
+            "семьсот", "восемьсот", "девятьсот")
+    val str11 = listOf<String>("", "десять", "одиннадцать", "двенадцать", "тринадцать", "четырнадцать", "пятнадцать",
+            "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать", "двадцать")
+    val str10 = listOf<String>("", "десять", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят", "семьдесят",
+            "восемьдесят", "девяносто")
+    val segments = mutableListOf<Int>()
+    var tmp = n
+    while (tmp > 999) {
+        val seg = tmp / 1000
+        segments.add(tmp - seg * 1000)
+        tmp = seg
+    }
+    segments.add(tmp)
+    segments.reverse()
+    val res = mutableListOf<String>()
+    var lev = segments.count() - 1
+    for (ri in segments) {
+        val sexi = lev
+        val r1 = ri / 100
+        val r22 = ri % 100
+        val r2 = r22 / 10
+        val r3 = ri % 10
+        if (ri > 99) res.add(str100[r1])
+        if (r22 > 20) {
+            res.add(str10[r2])
+            res.add(sex[sexi][r3])
+        } else {
+            if (r22 > 9) res.add(str11[r22 - 9])
+            else if (r22 in 1..9) res.add(sex[sexi][r3])
+        }
+        if (lev == 1) {
+            res.add(getThuosand(ri))
+        }
+        lev--
+    }
+    return res.filter { it != "" }.joinToString(separator = " ")
+}
+
+
+
+
