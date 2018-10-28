@@ -2,6 +2,8 @@
 
 package lesson5.task1
 
+import java.util.*
+
 /**
  * Пример
  *
@@ -94,7 +96,20 @@ fun buildWordSet(text: List<String>): MutableSet<String> {
  *     mapOf("Emergency" to "911", "Police" to "02")
  *   ) -> mapOf("Emergency" to "112, 911", "Police" to "02")
  */
-fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> = TODO()
+fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> {
+    val totMap = mapA.toMutableMap()
+    for ((name, numberB) in mapB) {
+        val numberA = totMap[name]
+        if (numberA == null) {
+            totMap[name] = numberB
+        } else if (numberA != numberB) {
+            totMap[name] = "${totMap[name]}, $numberB"
+        }
+    }
+
+    return totMap.toMap()
+}
+
 
 /**
  * Простая
@@ -106,7 +121,19 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *   buildGrades(mapOf("Марат" to 3, "Семён" to 5, "Михаил" to 5))
  *     -> mapOf(5 to listOf("Семён", "Михаил"), 3 to listOf("Марат"))
  */
-fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> = TODO()
+fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
+    val rtnGrades = mutableMapOf<Int, MutableList<String>>()
+    for ((student, grade) in grades) {
+        if (rtnGrades[grade] == null) {
+            rtnGrades[grade] = mutableListOf(student)
+        } else {
+            rtnGrades[grade]?.add(student)
+        }
+    }
+    rtnGrades.forEach { it.value.sortDescending() }
+    return rtnGrades.mapValues { it.value.toList() }.toMap()
+}
+
 
 /**
  * Простая
@@ -118,7 +145,8 @@ fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> = TODO()
  *   containsIn(mapOf("a" to "z"), mapOf("a" to "z", "b" to "sweet")) -> true
  *   containsIn(mapOf("a" to "z"), mapOf("a" to "zee", "b" to "sweet")) -> false
  */
-fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean = TODO()
+fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean =
+        a.filter { it.key !in b || it.value != b[it.key] } == emptyMap<String, String>()
 
 /**
  * Средняя
@@ -130,7 +158,27 @@ fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean = TODO()
  *   averageStockPrice(listOf("MSFT" to 100.0, "MSFT" to 200.0, "NFLX" to 40.0))
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
-fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> = TODO()
+fun averageStockPrice(stockPrices: List<Pair<String, Double>>): MutableMap<String, Double?> {
+    val rtnMut = mutableMapOf<String, Double?>()
+    val numMut = mutableMapOf<String, Int?>()
+    stockPrices.map { it ->
+        val (a, b) = it
+        var value = rtnMut.get(a)
+        if (value != null) {
+            numMut.put(a, numMut.get(a)!! + 1)
+            value += b
+        } else {
+            value = b
+            numMut.put(a, 1)
+        }
+        rtnMut.put(a, value)
+    }
+    for ((key, value) in numMut) {
+        val total = rtnMut.get(key)
+        rtnMut.put(key, total!! / (value!!))
+    }
+    return rtnMut
+}
 
 /**
  * Средняя
@@ -147,7 +195,20 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *     "печенье"
  *   ) -> "Мария"
  */
-fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? = TODO()
+fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
+    var rtn: String? = null
+    var max = -1.0
+    for ((key, value) in stuff) {
+        val (type, cost) = value
+        if (kind == type) {
+            if (max == -1.0 || max > cost) {
+                rtn = key
+                max = cost
+            }
+        }
+    }
+    return rtn
+}
 
 /**
  * Сложная
@@ -173,7 +234,17 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *          "Mikhail" to setOf("Sveta", "Marat")
  *        )
  */
-fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
+fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
+    val res = mutableMapOf<String, Set<String>>()
+    friends.forEach { (a, k) ->
+        res[a] = k
+        for (i in k) if (friends.containsKey(a) && friends[a] != null) {
+            res[a] = res[a]!! + friends[a]!! - a
+        } else res[a] = setOf()
+    }
+    return res
+}
+
 
 /**
  * Простая
@@ -189,14 +260,24 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   subtractOf(a = mutableMapOf("a" to "z"), mapOf("a" to "z"))
  *     -> a changes to mutableMapOf() aka becomes empty
  */
-fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>): Unit = TODO()
+fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>): Unit {
+    val iterator = a.entries.iterator()
+    while (iterator.hasNext()) {
+        val (key, value) = iterator.next()
+        if (b[key] == value) {
+            iterator.remove()
+        }
+    }
+}
+
 
 /**
  * Простая
  *
  * Для двух списков людей найти людей, встречающихся в обоих списках
  */
-fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = TODO()
+fun whoAreInBoth(a: List<String>, b: List<String>): List<String> =
+        a.toSet().intersect(b.toSet()).toList()
 
 /**
  * Средняя
@@ -207,7 +288,7 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = TODO()
  * Например:
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
-fun canBuildFrom(chars: List<Char>, word: String): Boolean = TODO()
+fun canBuildFrom(chars: List<Char>, word: String): Boolean = chars.toSet() == word.toSet()
 
 /**
  * Средняя
@@ -221,7 +302,12 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean = TODO()
  * Например:
  *   extractRepeats(listOf("a", "b", "a")) -> mapOf("a" to 2)
  */
-fun extractRepeats(list: List<String>): Map<String, Int> = TODO()
+fun extractRepeats(list: List<String>): Map<String, Int> {
+    val mut = mutableMapOf<String, Int>()
+    for (i in list)
+        mut[i] = list.count { it == i}
+    return mut.filterValues { it >= 2 }
+}
 
 /**
  * Средняя
