@@ -196,6 +196,7 @@ class Tests {
         )
     }
 
+
     @Test
     @Tag("Hard")
     fun propagateHandshakes() {
@@ -227,6 +228,7 @@ class Tests {
                 )
         )
     }
+
 
     @Test
     @Tag("Easy")
@@ -330,4 +332,5 @@ class Tests {
     }
 
     // TODO: map task tests
+
 }
