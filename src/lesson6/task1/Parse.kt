@@ -2,6 +2,9 @@
 
 package lesson6.task1
 
+import kotlinx.html.InputType
+import lesson2.task2.daysInMonth
+
 /**
  * Пример
  *
@@ -70,7 +73,23 @@ fun main(args: Array<String>) {
  * входными данными.
  */
 
-fun dateStrToDigit(str: String): String = TODO()
+val list = listOf("января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа",
+        "сентября", "октября", "ноября", "декабря")
+
+fun dateStrToDigit(str: String): String {
+    val parts = str.split(" ")
+    if (parts.size != 3) return ""
+    try {
+        val day = parts[0].toInt()
+        val year = parts[2].toInt()
+        val month = list.indexOf(parts[1]) + 1
+        if ((day in 1..daysInMonth(month, year)) && (month > 1) && (year > 1))
+            return String.format("%02d.%02d.%d", day, month, year)
+        return ""
+    } catch (e: NumberFormatException) {
+        return ""
+    }
+}
 
 /**
  * Средняя
@@ -82,9 +101,6 @@ fun dateStrToDigit(str: String): String = TODO()
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30 февраля 2009) считается неверными
  * входными данными.
  */
-val months = listOf("января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа",
-        "сентября", "октября", "ноября", "декабря")
-
 fun dateDigitToStr(digital: String): String {
     val parts = digital.split(".")
     if (parts.size != 3) return ""
@@ -92,13 +108,14 @@ fun dateDigitToStr(digital: String): String {
         val day = parts[0].toInt()
         val year = parts[2].toInt()
         val month = parts[1].toInt()
-        if (day in 1..31 && year >= 0 && month in 1..12) {
-            return String.format("%d %s %d", day, months[month - 1], year)
+        if ((day in 1..daysInMonth(month, year)) && (year > 1) && (month > 1)) {
+            return String.format("%d %s %d", day, list[month - 1], year)
         } else return ""
     } catch (e: NumberFormatException) {
         return ""
     }
 }
+
 
 /**
  * Средняя
@@ -112,7 +129,19 @@ fun dateDigitToStr(digital: String): String {
  * Все символы в номере, кроме цифр, пробелов и +-(), считать недопустимыми.
  * При неверном формате вернуть пустую строку
  */
-fun flattenPhoneNumber(phone: String): String = TODO()
+fun flattenPhoneNumber(phone: String): String {
+    val list1 = phone.split(" ", "-", "(", ")").filter { it != "" }
+    try {
+        var result = ""
+        for (part in list1) {
+            if (part.toInt() >= 0)
+                result = result + part
+        }
+        return result
+    } catch (e: NumberFormatException) {
+        return ""
+    }
+}
 
 /**
  * Средняя
@@ -124,7 +153,19 @@ fun flattenPhoneNumber(phone: String): String = TODO()
  * Прочитать строку и вернуть максимальное присутствующее в ней число (717 в примере).
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
-fun bestLongJump(jumps: String): Int = TODO()
+fun bestLongJump(jumps: String): Int {
+    val a = jumps.split(" ", "-", "%")
+    var b = -1
+    try {
+        for (part in a) {
+            if (part == "") continue
+            if (b < part.toInt()) b = part.toInt()
+        }
+        return b
+    } catch (e: NumberFormatException) {
+        return -1
+    }
+}
 
 /**
  * Сложная

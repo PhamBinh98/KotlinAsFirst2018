@@ -145,9 +145,11 @@ fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
 fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
     val m = (a - b).toMutableMap()
     for ((x, y) in b)
-        if (m.containsKey(x) && m[x] != y) m.remove(x)
-    return m.isNotEmpty()
+        if (m.containsKey(x) && m[x] == y) m.remove(x)
+    return m.isEmpty()
 }
+
+// fun containsIn(a: Map<String, string>, b: Map<String, string>): Boolean = b+ a == b
 
 
 /**
@@ -160,14 +162,11 @@ fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
  *   averageStockPrice(listOf("MSFT" to 100.0, "MSFT" to 200.0, "NFLX" to 40.0))
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
-fun mean(i: List<Double>): Double = (i.sum()) / i.size
-
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
     val rtnMut = mutableMapOf<String, MutableList<Double>>()
     val numMut = mutableMapOf<String, Double>()
     for ((a, b) in stockPrices) {
-        rtnMut.getOrPut(a) { mutableListOf() }
-        rtnMut[a]?.add(b)
+        rtnMut.getOrPut(a, ::mutableListOf).add(b)
     }
     rtnMut.forEach {
         numMut[it.key] = (mean(it.value))
@@ -232,17 +231,24 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  */
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
 
-    val friend = mutableMapOf<String, Set<String>>()
-
-    for ((name, friendOfFriends) in friends) {
-        friend[name] = friendOfFriends
-        for (a in friendOfFriends) {
-            if (friends.containsKey(a) && friends[a] != null)
-                friend[name] = friend[name]!! + friends[a]!! - name
-            else friend[a] = setOf()
-        }
+    val list = mutableMapOf<String, MutableSet<String>>()
+    for ((a, b) in friends) {
+        if (b == emptySet<String>())
+            list[a] = emptySet<String>().toMutableSet()
+        else
+            list[a] = b.toMutableSet()
+        for (name in b)
+            if (list.containsKey(name))
+            else
+                list[name] = emptySet<String>().toMutableSet()
     }
-    return friend
+    for ((a, people) in list)
+        for ((friend, newFriends) in list)
+            if ((friend != a) && (people.contains(friend))) {
+                people += newFriends
+                people.remove(a)
+            }
+    return list
 }
 
 
@@ -307,10 +313,17 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean {
  */
 fun extractRepeats(list: List<String>): Map<String, Int> {
     val mut = mutableMapOf<String, Int>()
-    for (i in list)
-        mut[i] = list.count { it == i }
-    return mut.filterValues { it >= 2 }
+    for (elem in list) {
+        if (mut[elem] == null) mut[elem] = 1
+        else mut[elem] = mut[elem]!! + 1
+    }
+    for (elem in list) {
+        if (mut[elem] == 1) mut.remove(elem)
+    }
+    return mut
+
 }
+
 
 /**
  * Средняя
@@ -321,16 +334,9 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
  * Например:
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
-fun hasAnagrams(words: List<String>): Boolean {
-    for (a in 0 until words.size - 1) {
-        for (b in a + 1 until words.size) {
-            if (words.map { it.toList().sorted() }[a] == words.map { it.toList().sorted() }[b]) {
-                return true
-            }
-        }
-    }
-    return false
-}
+fun hasAnagrams(words: List<String>): Boolean =
+        words.size != words.map { it.toList().sorted() }.toSet().size
+
 
 /**
  * Сложная
