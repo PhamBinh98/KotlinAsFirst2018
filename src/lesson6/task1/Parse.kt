@@ -79,18 +79,15 @@ val list = listOf("января", "февраля", "марта", "апреля"
 fun dateStrToDigit(str: String): String {
     val parts = str.split(" ")
     if (parts.size != 3) return ""
-    try {
-        if ((parts[0].toIntOrNull() == null) || (parts[2].toIntOrNull() == null))
-            return ""
-        val day = parts[0].toInt()
-        val year = parts[2].toInt()
-        val month = list.indexOf(parts[1]) + 1
-        if ((day in 1..daysInMonth(month, year)) && (month > 1) && (year > 1))
-            return String.format("%02d.%02d.%d", day, month, year)
+    if ((parts[0].toIntOrNull() == null) || (parts[2].toIntOrNull() == null))
         return ""
-    } catch (e: NumberFormatException) {
-        return ""
-    }
+    val day = parts[0].toInt()
+    val year = parts[2].toInt()
+    val month = list.indexOf(parts[1]) + 1
+    if ((day in 1..daysInMonth(month, year)) && (month > 1) && (year > 1))
+        return String.format("%02d.%02d.%d", day, month, year)
+    return ""
+
 }
 
 /**
@@ -106,18 +103,15 @@ fun dateStrToDigit(str: String): String {
 fun dateDigitToStr(digital: String): String {
     val parts = digital.split(".")
     if (parts.size != 3) return ""
-    try {
-        val day = parts[0].toInt()
-        val year = parts[2].toInt()
-        val month = parts[1].toInt()
-        if ((parts[0].toIntOrNull() == null) || (parts[2].toIntOrNull() == null))
-            return ""
-        if ((day in 1..daysInMonth(month, year)) && (year > 1) && (month > 1)) {
-            return String.format("%d %s %d", day, list[month - 1], year)
-        } else return ""
-    } catch (e: NumberFormatException) {
+    val day = parts[0].toInt()
+    val year = parts[2].toInt()
+    val month = parts[1].toInt()
+    if ((parts[0].toIntOrNull() == null) || (parts[2].toIntOrNull() == null))
         return ""
-    }
+    if ((day in 1..daysInMonth(month, year)) && (year > 1) && (month > 1)) {
+        return String.format("%d %s %d", day, list[month - 1], year)
+    } else return ""
+
 }
 
 
