@@ -84,7 +84,7 @@ fun dateStrToDigit(str: String): String {
     val day = parts[0].toInt()
     val year = parts[2].toInt()
     val month = list.indexOf(parts[1]) + 1
-    if ((day in 1..daysInMonth(month, year)) && (month > 1) && (year > 1))
+    if ((day in 1..daysInMonth(month, year)) && (year > 1) && (month > 1))
         return String.format("%02d.%02d.%d", day, month, year)
     return ""
 
@@ -103,14 +103,18 @@ fun dateStrToDigit(str: String): String {
 fun dateDigitToStr(digital: String): String {
     val parts = digital.split(".")
     if (parts.size != 3) return ""
-    val day = parts[0].toInt()
-    val year = parts[2].toInt()
-    val month = parts[1].toInt()
-    if ((parts[0].toIntOrNull() == null) || (parts[2].toIntOrNull() == null))
+    try {
+        val day = parts[0].toInt()
+        val year = parts[2].toInt()
+        val month = parts[1].toInt()
+        if ((parts[0].toIntOrNull() == null) || (parts[2].toIntOrNull() == null))
+            return ""
+        if (day in 1..daysInMonth(month, year) && (month in 1..12) && (year > 1))
+            return String.format("%d %s %d", day, list[month - 1], year)
         return ""
-    if ((day in 1..daysInMonth(month, year)) && (year > 1) && (month > 1)) {
-        return String.format("%d %s %d", day, list[month - 1], year)
-    } else return ""
+    } catch (e: NumberFormatException) {
+        return ""
+    }
 
 }
 
@@ -175,7 +179,23 @@ fun bestLongJump(jumps: String): Int {
  * Прочитать строку и вернуть максимальную взятую высоту (230 в примере).
  * При нарушении формата входной строки вернуть -1.
  */
-fun bestHighJump(jumps: String): Int = TODO()
+fun bestHighJump(jumps: String): Int {
+    val a = jumps.split(" ", "%", "-")
+    val list = mutableListOf<String>()
+    var b = -1
+    try {
+        for (part in a) {
+            if (part != "") list.add(part)
+        }
+        for (i in 0 until list.size) {
+            if (list[i] == "+" && list[i - 1].toInt() > b) b = list[i - 1].toInt()
+        }
+        return b
+    } catch (e: NumberFormatException) {
+        return -1
+    }
+}
+
 
 /**
  * Сложная
@@ -188,6 +208,7 @@ fun bestHighJump(jumps: String): Int = TODO()
  */
 fun plusMinus(expression: String): Int = TODO()
 
+
 /**
  * Сложная
  *
@@ -197,7 +218,18 @@ fun plusMinus(expression: String): Int = TODO()
  * Вернуть индекс начала первого повторяющегося слова, или -1, если повторов нет.
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
-fun firstDuplicateIndex(str: String): Int = TODO()
+fun firstDuplicateIndex(str: String): Int {
+    val list = str.split(" ")
+    var word = ""
+    var a = -1
+    for (i in list) {
+        if (word.toLowerCase() == i.toLowerCase()) return a
+        a += word.length + 1
+        word = i
+    }
+    return -1
+}
+
 
 /**
  * Сложная
