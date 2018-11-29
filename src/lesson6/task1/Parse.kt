@@ -77,17 +77,19 @@ val list = listOf("января", "февраля", "марта", "апреля"
         "сентября", "октября", "ноября", "декабря")
 
 fun dateStrToDigit(str: String): String {
+    if (!Regex("""(\d{1,2}) ([а-я]+) (\d+)""").matches(str)) return ""
     val parts = str.split(" ")
-    if (parts.size != 3) return ""
-    if ((parts[0].toIntOrNull() == null) || (parts[2].toIntOrNull() == null))
+    try {
+        val day = parts[0].toInt()
+        val year = parts[2].toInt()
+        val month = list.indexOf(parts[1]) + 1
+        if (month <= 0) return ""
+        if (day in 1..daysInMonth(month, year))
+            return String.format("%02d.%02d.%d", day, month, year)
         return ""
-    val month: Int
-    val day = parts[0].toInt()
-    val year = parts[2].toInt()
-    if (parts[1] in list) month = list.indexOf(parts[1]) + 1
-    else return ""
-    return if ((daysInMonth(month, year) < day) && (month > 1) && (year > 1)) ""
-    else String.format("%02d.%02d.%d", day, month, year)
+    } catch (e: NumberFormatException) {
+        return ""
+    }
 }
 
 
@@ -102,22 +104,21 @@ fun dateStrToDigit(str: String): String {
  * входными данными.
  */
 fun dateDigitToStr(digital: String): String {
-    val parts: List<String>
-    val month: String
+    if (!Regex("""((\d{1,2}).(\d{2}).(\d+))""").matches(digital)) return ""
+    val parts = digital.split(".")
     try {
-        parts = digital.split(".")
-        if (parts.size != 3) return ""
-        month = list[parts[1].toInt() - 1]
-        if ((parts[0].toIntOrNull() == null) || (parts[2].toIntOrNull() == null))
-            return ""
         val day = parts[0].toInt()
         val year = parts[2].toInt()
-        if ((daysInMonth(parts[1].toInt(), year) > day) && (year > 1))
+        if (parts[1].toInt() !in 1..12) return ""
+        val month = list[parts[1].toInt() - 1]
+        if (day in 1..daysInMonth(parts[1].toInt(), year)) {
             return String.format("%d %s %d", day, month, year)
-    } catch (e: Exception) {
+        }
+        return ""
+    } catch (e: NumberFormatException) {
         return ""
     }
-    return ""
+
 }
 
 
