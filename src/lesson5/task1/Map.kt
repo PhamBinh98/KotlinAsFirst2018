@@ -295,7 +295,7 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
     val mut = mutableMapOf<String, Int>()
     for (elem in list) {
         if (mut[elem] == null) mut[elem] = 1
-        else mut[elem] = mut[elem]!! + 1
+        else mut[elem] = mut.getOrDefault(elem, 0) + 1
     }
     for (elem in list) {
         if (mut[elem] == 1) mut.remove(elem)

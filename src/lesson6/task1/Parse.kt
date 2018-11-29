@@ -81,14 +81,15 @@ fun dateStrToDigit(str: String): String {
     if (parts.size != 3) return ""
     if ((parts[0].toIntOrNull() == null) || (parts[2].toIntOrNull() == null))
         return ""
+    val month: Int
     val day = parts[0].toInt()
     val year = parts[2].toInt()
-    val month = list.indexOf(parts[1]) + 1
-    if ((day in 1..daysInMonth(month, year)) && (year > 1) && (month > 1))
-        return String.format("%02d.%02d.%d", day, month, year)
-    return ""
-
+    if (parts[1] in list) month = list.indexOf(parts[1]) + 1
+    else return ""
+    return if ((daysInMonth(month, year) < day) && (month > 1) && (year > 1)) ""
+    else String.format("%02d.%02d.%d", day, month, year)
 }
+
 
 /**
  * Средняя
@@ -101,21 +102,22 @@ fun dateStrToDigit(str: String): String {
  * входными данными.
  */
 fun dateDigitToStr(digital: String): String {
-    val parts = digital.split(".")
-    if (parts.size != 3) return ""
+    val parts: List<String>
+    val month: String
     try {
-        val day = parts[0].toInt()
-        val year = parts[2].toInt()
-        val month = parts[1].toInt()
+        parts = digital.split(".")
+        if (parts.size != 3) return ""
+        month = list[parts[1].toInt() - 1]
         if ((parts[0].toIntOrNull() == null) || (parts[2].toIntOrNull() == null))
             return ""
-        if (day in 1..daysInMonth(month, year) && (month in 1..12) && (year > 1))
-            return String.format("%d %s %d", day, list[month - 1], year)
-        return ""
-    } catch (e: NumberFormatException) {
+        val day = parts[0].toInt()
+        val year = parts[2].toInt()
+        if ((daysInMonth(parts[1].toInt(), year) > day) && (year > 1))
+            return String.format("%d %s %d", day, month, year)
+    } catch (e: Exception) {
         return ""
     }
-
+    return ""
 }
 
 
@@ -133,7 +135,7 @@ fun dateDigitToStr(digital: String): String {
  */
 fun flattenPhoneNumber(phone: String): String {
     val list1 = phone.split(" ", "-", "(", ")").filter { it != "" }
-    try {
+    return try {
         var result = ""
         for (part in list1) {
             if (part.toInt() >= 0)
