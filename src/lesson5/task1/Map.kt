@@ -145,8 +145,8 @@ fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
 fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
     val m = (a - b).toMutableMap()
     for ((x, y) in b)
-        if (m.containsKey(x) && m[x] == y) m.remove(x)
-    return m.isEmpty()
+        if (m[x] != y) m.remove(x)
+    return m.isNotEmpty()
 }
 
 // fun containsIn(a: Map<String, string>, b: Map<String, string>): Boolean = b+ a == b
@@ -294,8 +294,7 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean {
 fun extractRepeats(list: List<String>): Map<String, Int> {
     val mut = mutableMapOf<String, Int>()
     for (elem in list) {
-        if (mut[elem] == null) mut[elem] = 1
-        else mut[elem] = mut.getOrDefault(elem, 0) + 1
+        mut[elem] = mut.getOrDefault(elem, 0) + 1
     }
     for (elem in list) {
         if (mut[elem] == 1) mut.remove(elem)

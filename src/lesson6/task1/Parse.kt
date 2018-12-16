@@ -142,7 +142,8 @@ fun flattenPhoneNumber(phone: String): String {
             if (part.toInt() >= 0)
                 result = result + part
         }
-        return result
+        result
+
     } catch (e: NumberFormatException) {
         return ""
     }
@@ -161,12 +162,12 @@ fun flattenPhoneNumber(phone: String): String {
 fun bestLongJump(jumps: String): Int {
     val a = jumps.split(" ", "-", "%")
     var b = -1
-    try {
+    return try {
         for (part in a) {
-            if (part == "") continue
+            if (part.isEmpty()) continue
             if (b < part.toInt()) b = part.toInt()
         }
-        return b
+        b
     } catch (e: NumberFormatException) {
         return -1
     }
@@ -184,13 +185,10 @@ fun bestLongJump(jumps: String): Int {
  */
 fun bestHighJump(jumps: String): Int {
     val a = jumps.split(" ", "%", "-")
-    val list = mutableListOf<String>()
     var b = -1
     try {
-        for (part in a) {
-            if (part != "") list.add(part)
-        }
-        for (i in 0 until list.size) {
+        val list = a.filter { it != "" }
+        for (i in 1 until list.size) {
             if (list[i] == "+" && list[i - 1].toInt() > b) b = list[i - 1].toInt()
         }
         return b
@@ -222,15 +220,17 @@ fun plusMinus(expression: String): Int = TODO()
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
 fun firstDuplicateIndex(str: String): Int {
-    val list = str.split(" ")
-    var word = ""
-    var a = -1
-    for (i in list) {
-        if (word.toLowerCase() == i.toLowerCase()) return a
-        a += word.length + 1
-        word = i
-    }
-    return -1
+    val list = str.toLowerCase().split(" ")
+    var number = -1
+    var a = 0
+
+    for (i in 0 until list.size - 1)
+        if (list[i] == list[i + 1]) {
+            number = i
+            return a + number
+        } else a += list[i].length
+
+    return number
 }
 
 
@@ -245,7 +245,23 @@ fun firstDuplicateIndex(str: String): Int {
  * или пустую строку при нарушении формата строки.
  * Все цены должны быть больше либо равны нуля.
  */
-fun mostExpensive(description: String): String = TODO()
+fun mostExpensive(description: String): String {
+    val list = description.split(" ", "; ")
+    var a = 0.0
+    var b = 0
+    try {
+        for (i in 1..list.size - 1 step 2) {
+            if (list[i].toDouble() > a) {
+                a = list[i].toDouble()
+                b = i - 1
+            }
+        }
+        return list[b]
+    } catch (e: NumberFormatException) {
+        return ""
+    }
+}
+
 
 /**
  * Сложная
@@ -258,7 +274,30 @@ fun mostExpensive(description: String): String = TODO()
  *
  * Вернуть -1, если roman не является корректным римским числом
  */
-fun fromRoman(roman: String): Int = TODO()
+fun fromRoman(roman: String): Int {
+    val list = mutableListOf<Int>()
+    var x = -1
+    for (part in roman) {
+        when (part) {
+            'I' -> list.add(1)
+            'V' -> list.add(5)
+            'X' -> list.add(10)
+            'L' -> list.add(50)
+            'C' -> list.add(100)
+            'D' -> list.add(500)
+            'M' -> list.add(1000)
+            else -> return -1
+        }
+    }
+    for (i in 0 until list.size) {
+        if (i == 0) x = list[0]
+        else {
+            if (list[i] <= list[i - 1]) x += list[i]
+            else x += list[i] - 2 * list[i - 1]
+        }
+    }
+    return x
+}
 
 /**
  * Очень сложная
