@@ -143,11 +143,13 @@ fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
  *   containsIn(mapOf("a" to "z"), mapOf("a" to "zee", "b" to "sweet")) -> false
  */
 fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
-    val m = (a - b).toMutableMap()
-    for ((x, y) in b)
-        if (m[x] != y) m.remove(x)
-    return m.isNotEmpty()
+    for ((x, y) in a) {
+        if (a[x] != b[x]) return false
+    }
+    return true
 }
+
+
 
 // fun containsIn(a: Map<String, string>, b: Map<String, string>): Boolean = b+ a == b
 
@@ -357,3 +359,5 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = TODO()
  */
 
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> = TODO()
+
+
