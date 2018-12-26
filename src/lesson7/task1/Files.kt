@@ -77,25 +77,21 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
  * Исключения (жюри, брошюра, парашют) в рамках данного задания обрабатывать не нужно
  *
  */
-fun sibilants(inputName: String, outputName: String)
-{
+fun sibilants(inputName: String, outputName: String) {
     val outputStream = File(outputName).bufferedWriter()
-    val exception = listOf("жюри", "брошюра", "парашют")
-    val letter = listOf("Ж", "Ч", "Ш", "Щ", "ж", "ч", "ш", "щ")
-    val list = listOf("ы", "я", "ю", "Ы", "Я", "Ю", "и", "а", "у", "И", "А", "У")
+    val map = mapOf<Char, Char>('ы' to 'и', 'Ы' to 'И', 'я' to 'а', 'Я' to 'А', 'ю' to 'у', 'Ю' to 'У')
+
+
     for (line in File(inputName).readLines()) {
-        var b = line
-        for (i in 0 until letter.size) {
-            for (k in 0..5) {
-                val a = letter[i] + list[k]
-                if (a.toRegex().findAll(line).count() > 0 && exception.indexOf(line) == -1) {
-                    b = b.replace(a, letter[i] + list[k + 6])
-                }
-            }
+        for (k in 0..line.length - 1) {
+            if ((line[k] in map.keys) && (line[k - 1] in "ЖжЧчШшЩщ"))
+                outputStream.write(map[line[k]].toString())
+            else outputStream.write(line[k].toString())
         }
-        outputStream.write(b)
+
         outputStream.newLine()
     }
+
     outputStream.close()
 }
 
@@ -119,16 +115,16 @@ fun sibilants(inputName: String, outputName: String)
  */
 fun centerFile(inputName: String, outputName: String) {
     val outputStream = File(outputName).bufferedWriter()
+    val lines = File(inputName).readLines().map { it.trim() }
     var maxLength = 0
-    for (line in File(inputName).readLines()) {
-        val length = line.trim().length
-        if (length > maxLength)
-            maxLength = length
+    for (line in lines) {
+        if (line.length > maxLength) maxLength = line.length
     }
-    for (line in File(inputName).readLines()) {
-        var str = ""
-        for (i in 1..(maxLength - line.trim().length) / 2) str += " "
-        outputStream.write(str + line.trim())
+
+    for (line in lines) {
+
+        val cent = " ".repeat((maxLength - line.length) / 2)
+        outputStream.write(cent + line)
         outputStream.newLine()
     }
     outputStream.close()
